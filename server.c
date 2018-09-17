@@ -45,5 +45,8 @@ void main(){
             exit(3);
         }
         write(sock_out, "Hello\n", 6);
+        sleep(4);
+        write(sock_out, "Hello\n", 6);
+
     }
 }
