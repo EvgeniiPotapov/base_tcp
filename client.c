@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 
 void main(){
@@ -18,6 +19,9 @@ void main(){
 
     sock_in = socket(AF_INET, SOCK_STREAM, 0);
     sock_out = socket(AF_INET, SOCK_STREAM, 0);
+    
+
+
     if ((sock_in < 0) || (sock_out < 0))
     {
         perror("socket creation error");
@@ -37,12 +41,12 @@ void main(){
         perror("socket_out connect error");
         exit(2);
     }
-    FD_ZERO(&readfds);
-    FD_SET(0, &readfds);
-    FD_SET(sock_in, &readfds);
     while(1){
+        FD_ZERO(&readfds);
+        FD_SET(0, &readfds);
+        FD_SET(sock_in, &readfds);
+        select(sock_in+1, &readfds, NULL, NULL, NULL);
         for(i=0; i<=sock_in; i++){
-            select(sock_in+1, &readfds, NULL, NULL, NULL);
             if (FD_ISSET(0, &readfds)){
                 buf_rv = read(0, buf, sizeof(buf));
                 write(1, buf, buf_rv);
