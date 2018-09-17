@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
+
 
 
 void main(){
@@ -46,21 +46,18 @@ void main(){
         FD_SET(0, &readfds);
         FD_SET(sock_in, &readfds);
         select(sock_in+1, &readfds, NULL, NULL, NULL);
-        for(i=0; i<=sock_in; i++){
+        
             if (FD_ISSET(0, &readfds)){
                 buf_rv = read(0, buf, sizeof(buf));
-                write(1, buf, buf_rv);
+                send(sock_out, buf, buf_rv, 0);
                 memset(buf, 0, buf_rv);
             }
             if (FD_ISSET(sock_in, &readfds)){
-                buf_rv = read(sock_in, buf, sizeof(buf));
+                buf_rv = recv(sock_in, buf, sizeof(buf), 0);
                 write(1, buf, buf_rv);
                 memset(buf, 0, buf_rv);
             }
-        }
+        
     }
 
 }
-
-
-
