@@ -13,16 +13,12 @@
 void main(){
     char buf[1024];
     int buf_rv = 0;
-    int sock_in, sock_out, i;
+    int i, sock;
     struct sockaddr_in addr;
     fd_set readfds;
 
-    sock_in = socket(AF_INET, SOCK_STREAM, 0);
-    sock_out = socket(AF_INET, SOCK_STREAM, 0);
-    
-
-
-    if ((sock_in < 0) || (sock_out < 0))
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0)
     {
         perror("socket creation error");
         exit(1);
@@ -31,29 +27,25 @@ void main(){
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5000);
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    if(connect(sock_in, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+   
+    if(connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        perror("socket_in connect error");
-        exit(2);
-    }
-    if(connect(sock_out, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-    {
-        perror("socket_out connect error");
+        perror("socket connect error");
         exit(2);
     }
     while(1){
         FD_ZERO(&readfds);
         FD_SET(0, &readfds);
-        FD_SET(sock_in, &readfds);
-        select(sock_in+1, &readfds, NULL, NULL, NULL);
+        FD_SET(sock, &readfds);
+        select(sock+1, &readfds, NULL, NULL, NULL);
         
             if (FD_ISSET(0, &readfds)){
                 buf_rv = read(0, buf, sizeof(buf));
-                send(sock_out, buf, buf_rv, 0);
+                send(sock, buf, buf_rv, 0);
                 memset(buf, 0, buf_rv);
             }
-            if (FD_ISSET(sock_in, &readfds)){
-                buf_rv = recv(sock_in, buf, sizeof(buf), 0);
+            if (FD_ISSET(sock, &readfds)){
+                buf_rv = recv(sock, buf, sizeof(buf), 0);
                 write(1, buf, buf_rv);
                 memset(buf, 0, buf_rv);
             }
