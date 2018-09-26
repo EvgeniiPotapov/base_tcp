@@ -10,7 +10,7 @@
 
 
 
-void main(){
+void main(int argc, char *argv[]){
     char buf[1024];
     int buf_rv = 0;
     int i, sock;
@@ -26,7 +26,7 @@ void main(){
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5000);
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    addr.sin_addr.s_addr = inet_addr(argv[1]);
    
     if(connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
